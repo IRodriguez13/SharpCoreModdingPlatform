@@ -12,6 +12,7 @@ public class FinishAdapterLayer : IInstructionAdapter
     public FinishAdapterLayer(string pipeName = "msharp_bridge") =>  _pipeName = pipeName;
     
 
+    // Este adaptador se encarga de enviar instrucciones a través de un Named Pipe
     public InstructionValidationResult Validate(MSharpInstruction instruction)
     {
         var response = SendPayloadOverPipe(instruction, isValidation: true);
@@ -23,26 +24,29 @@ public class FinishAdapterLayer : IInstructionAdapter
         };
     }
 
+    // para aplicar los cambios en caso de que recibamos OK en el adapter
     public bool Apply(MSharpInstruction instruction)
     {
-        var response = SendPayloadOverPipe(instruction, isValidation: false);
+        string response = SendPayloadOverPipe(instruction, isValidation: false);
         return response?.ToLowerInvariant() == "ok";
     }
 
+    // Si el adapter me lo permite, abro pipes y envío el payload
     private string? SendPayloadOverPipe(MSharpInstruction instruction, bool isValidation)
     {
         try
         {
-            using var client = new NamedPipeClientStream(".", _pipeName, PipeDirection.InOut, PipeOptions.None);
-            client.Connect(2000); // Timeout de 2s
+            using NamedPipeClientStream client = new(".", _pipeName, PipeDirection.InOut, PipeOptions.None);
+            client.Connect(2000); // Timeout de 2s para esperar la conexión antes del serialize del payl
 
-            var payloadJson = JsonSerializer.Serialize(new
-            {
-                type = isValidation ? "validate" : "apply",
-                data = instruction
-            });
+            var payl = JsonSerializer.Serialize(
+                new
+                {
+                    type = isValidation ? "validate" : "apply",
+                    data = instruction
+                });
 
-            byte[] buffer = Encoding.UTF8.GetBytes(payloadJson);
+            byte[] buffer = Encoding.UTF8.GetBytes(payl);
             client.Write(buffer, 0, buffer.Length);
             client.Flush();
 
@@ -54,7 +58,8 @@ public class FinishAdapterLayer : IInstructionAdapter
         catch (Exception ex)
         {
             Console.WriteLine($"❌ Error en SendPayloadOverPipe: {ex.Message}");
-            return null;
+
+            return null; 
         }
     }
 }

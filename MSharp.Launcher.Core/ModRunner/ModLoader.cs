@@ -5,6 +5,11 @@ namespace MSharp.Launcher.Core.ModRunner
 {
     public static class ModLoader
     {
+        // -- ModLoader es una clase estática que se encarga de cargar mods desde una ruta específica Sólo funciona si uso mods compilados del lado del user --
+        // CargarMods busca en la ruta especificada todos los archivos .dll,
+        // intenta cargar cada uno como un ensamblado, y luego busca tipos que implementen
+        // la interfaz IMsharpMod. Si encuentra alguno, lo instancia y lo agrega a la lista de mods.
+        // Si hay errores durante la carga, los captura y los imprime en la consola.
         public static List<IMsharpMod> CargarMods(string ruta)
         {
             List<IMsharpMod> mods = [];
@@ -24,15 +29,14 @@ namespace MSharp.Launcher.Core.ModRunner
 
                     foreach (var tipo in tipos)
                     {
-                        if (Activator.CreateInstance(tipo) is IMsharpMod mod)
-                        {
-                            mods.Add(mod);
-                            Console.WriteLine($"✅ Mod cargado: {tipo.FullName}");
-                        }
-                        else
+                        if (Activator.CreateInstance(tipo) is not IMsharpMod mod)
                         {
                             Console.WriteLine($"⚠️ No se pudo instanciar: {tipo.FullName}");
+                        
                         }
+                            mods.Add(mod);
+                            Console.WriteLine($"✅ Mod cargado: {tipo.FullName}");
+                        
                     }
                 }
                 catch (ReflectionTypeLoadException ex)

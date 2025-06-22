@@ -14,7 +14,7 @@ namespace MSharp.Launcher.Core.Bridge
         private readonly IInstructionAdapter _adapter; // Adapter para procesar instrucciones
         private readonly StagingManager<MSharpInstruction> _stageManager; // Manejador de staging para aplicar y revertir instrucciones
 
-        public event Action<string> OnMessage; // Esto queda por compatibilidad, pero ya no es el punto de entrada principal
+        public event Action<string> OnMessage; // Esto queda por compatibilidad, pero  no es el punto de entrada principal
 
         public NamedPipeBridgeConnection(string pipeName = "msharp_bridge", IInstructionAdapter _adapter = null!)
         {
@@ -41,11 +41,11 @@ namespace MSharp.Launcher.Core.Bridge
                             pipeName,
                             PipeDirection.InOut,
                             1,
-#if WINDOWS
+                        #if WINDOWS
                             PipeTransmissionMode.Message,
-#else
+                        #else
                             PipeTransmissionMode.Byte,
-#endif
+                        #endif
                             PipeOptions.Asynchronous
                         );
 
@@ -57,6 +57,7 @@ namespace MSharp.Launcher.Core.Bridge
                         while (server.IsConnected)
                         {
                             int bytesRead = server.Read(buffer, 0, buffer.Length);
+
                             if (bytesRead == 0) break;
 
                             string json = Encoding.UTF8.GetString(buffer, 0, bytesRead);

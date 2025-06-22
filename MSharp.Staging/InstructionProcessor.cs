@@ -6,6 +6,9 @@ using MSharp.Launcher.Core.Models;
 
 namespace MSharp.Staging;
 
+// -- Acá gestionamos las respuestas del adapter y manejamos la lógica de staging --
+// -- Esta clase es el core del sistema de staging --
+
 public class InstructionProcessor
 {
 	private readonly IInstructionValidator _validator;
@@ -43,7 +46,7 @@ public class InstructionProcessor
 		}
 		catch
 		{
-   			return InstructionValidationResult.Failure("An error occurred while processing the instruction");
+			return InstructionValidationResult.Failure("An error occurred while processing the instruction");
 		}
 	}
 }

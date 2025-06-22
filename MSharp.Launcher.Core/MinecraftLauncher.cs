@@ -4,6 +4,7 @@ namespace MinecraftLauncherCORE
 {
     public class MinecraftLauncher
     {
+        // -- Acá cargo y lanzo el mineacraft con los argumentos necesarios --
         public void LaunchVanilla(string javaPath, string gameJar, string mainClass, string args, string workingDirectory)
         {
             ProcessStartInfo psi = new()
@@ -24,14 +25,12 @@ namespace MinecraftLauncherCORE
 
             process.OutputDataReceived += (s, e) =>
             {
-                if (!string.IsNullOrEmpty(e.Data))
-                    Console.WriteLine($"[MINECRAFT STDOUT] {e.Data}");
+                if (!string.IsNullOrEmpty(e.Data))  Console.WriteLine($"[MINECRAFT STDOUT] {e.Data}");
             };
 
             process.ErrorDataReceived += (s, e) =>
             {
-                if (!string.IsNullOrEmpty(e.Data))
-                    Console.WriteLine($"[MINECRAFT STDERR] {e.Data}");
+                if (!string.IsNullOrEmpty(e.Data))  Console.WriteLine($"[MINECRAFT STDERR] {e.Data}");
             };
 
             prcss.Start();
