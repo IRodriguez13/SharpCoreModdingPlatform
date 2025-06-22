@@ -21,11 +21,7 @@ El objetivo es **democratizar el modding, hacerlo más accesible y moderno**.
 ## Arquitectura
 
 ```
-+-------------------+         Named Pipe         +-------------------+
-|   Minecraft (Java)| <-----------------------> |    C# Launcher    |
-|  + Forge Mod      |                           | + ModLoader       |
-|  | MSharpBridge   |                           | + Mods (IMsharpMod)|
-+-------------------+                           +-------------------+
+Interface (IMsharpMod) --> BridgeCore (Named pipes, Staging System) --> Adapter Response(OK/FAIL) --> if OK Adapter Game implementation else Rollback
 ```
 
 - **Java Side:** Mod Forge (`MSharpBridgeMod`) que actúa como cliente de la pipe.
@@ -50,10 +46,10 @@ El objetivo es **democratizar el modding, hacerlo más accesible y moderno**.
 ```csharp
 public class ModVioleta : IMsharpMod
 {
-    public void OnStart() => Console.WriteLine("🟪 Mod Violeta iniciado.");
+    public void OnStart() => Console.WriteLine("Mod de ejemplo iniciado.");
     public void OnEvent(string type, object? payload = null)
     {
-        Console.WriteLine($"📨 Evento recibido desde Java: {type} | Payload: {payload}");
+        Console.WriteLine($"Evento recibido desde Java: {type} | Payload: {payload}");
     }
     public void OnTick() { }
 }
