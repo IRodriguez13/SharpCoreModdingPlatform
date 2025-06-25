@@ -23,12 +23,12 @@ namespace MinecraftLauncherCORE
                 StartInfo = psi
             };
 
-            process.OutputDataReceived += (s, e) =>
+            prcss.OutputDataReceived += (s, e) =>
             {
                 if (!string.IsNullOrEmpty(e.Data))  Console.WriteLine($"[MINECRAFT STDOUT] {e.Data}");
             };
 
-            process.ErrorDataReceived += (s, e) =>
+            prcss.ErrorDataReceived += (s, e) =>
             {
                 if (!string.IsNullOrEmpty(e.Data))  Console.WriteLine($"[MINECRAFT STDERR] {e.Data}");
             };

@@ -28,7 +28,7 @@ public class StagingManager<T>
 		{
 			MSrevert(); // Automático por si la aplicación falla
 			Console.WriteLine("[Staging] Error al aplicar la instrucción. Se ha revertido el cambio.");
-			_current = null;
+			_current = default;
 			_history.Clear();
 			return;
 		}

@@ -6,15 +6,7 @@ public class InstructionValidationResult
 {
     public bool IsValid { get; }
     public string? ErrorMessage
-    {
-        get;
-        set
-        {
-            if (!IsValid && string.IsNullOrEmpty(value)) throw new ArgumentException("ErrorMessage cannot be null or empty if IsValid is false.");
-
-            value = value;
-        }
-    }
+    { get; }
 
     private InstructionValidationResult(bool isValid, string? errorMessage)
     {

@@ -27,11 +27,13 @@ public class FinishAdapterLayer : IInstructionAdapter
     // para aplicar los cambios en caso de que recibamos OK en el adapter
     public bool Apply(MSharpInstruction instruction)
     {
-        string response = SendPayloadOverPipe(instruction, isValidation: false);
+        string response = SendPayloadOverPipe(instruction, isValidation: false) ?? throw new InvalidOperationException("No se pudo enviar el payload al adaptador.");
         return response?.ToLowerInvariant() == "ok";
     }
 
-    // Si el adapter me lo permite, abro pipes y envío el payload
+    // Si el adapter me lo permite (si me devolvió OK), abro pipes y envío el payload final que se debería implementar en el juego
+    // Si no, devuelvo un mensaje de error
+    // El payload es un JSON con el tipo de instrucción y los datos necesarios para aplicar
     private string? SendPayloadOverPipe(MSharpInstruction instruction, bool isValidation)
     {
         try

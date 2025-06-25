@@ -2,6 +2,8 @@ using System.IO.Pipes;
 using MSharp.ModLoader.StagingSystem;
 using MSharp.Launcher.Core.Models;
 using MSharp.Staging.Instruction_adapters;
+using System.Text;
+using System.Text.Json;
 
 namespace MSharp.Launcher.Core.Bridge
 {
@@ -11,15 +13,15 @@ namespace MSharp.Launcher.Core.Bridge
         private NamedPipeServerStream? server;
         private Thread? listenThread;
 
-        private readonly IInstructionAdapter _adapter; // Adapter para procesar instrucciones
+        private readonly FinishAdapterLayer _adapter; // Adapter para procesar instrucciones
         private readonly StagingManager<MSharpInstruction> _stageManager; // Manejador de staging para aplicar y revertir instrucciones
 
-        public event Action<string> OnMessage; // Esto queda por compatibilidad, pero  no es el punto de entrada principal
+        public event Action<string>? OnMessage; // Esto queda por compatibilidad, pero  no es el punto de entrada principal
 
-        public NamedPipeBridgeConnection(string pipeName = "msharp_bridge", IInstructionAdapter _adapter = null!)
+        public NamedPipeBridgeConnection(string pipeName = "msharp_bridge", FinishAdapterLayer _adapter = null!)
         {
             this.pipeName = pipeName;
-            this._adapter = new FinishAdapterLayer("msharp_bridge");
+            this._adapter = new FinishAdapterLayer("msharp_bridge") ?? throw new ArgumentNullException(nameof(_adapter), "El adapter no puede ser nulo.");
 
             // Inicializamos el StagingManager con callbacks para aplicar y revertir instrucciones.
             // Estos callbacks pueden ser adaptados para interactuar con tu lógica de modding.
@@ -100,6 +102,9 @@ namespace MSharp.Launcher.Core.Bridge
                 }
 
                 byte[] buffer = Encoding.UTF8.GetBytes(message);
+
+                if (server is null) throw new InvalidOperationException("El servidor de pipe no está inicializado.");
+
                 server.Write(buffer, 0, buffer.Length);
                 server.Flush();
 
@@ -155,9 +160,10 @@ namespace MSharp.Launcher.Core.Bridge
 
             try
             {
-                var validationResult = _adapter.Validate(payload);
+                var validationResult = _adapter.Validate(payload) ?? throw new InvalidOperationException("El adapter devolvió un resultado de validación nulo.");
 
-                if (validationResult == null || !validationResult.IsValid)
+
+                if (!validationResult.IsValid)
                 {
                     Console.WriteLine($"❌ Instrucción inválida: {validationResult.ErrorMessage}");
                     return false;

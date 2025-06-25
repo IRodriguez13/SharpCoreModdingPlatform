@@ -34,9 +34,11 @@ namespace MSharp.Launcher.Core.ModRunner
                             Console.WriteLine($"⚠️ No se pudo instanciar: {tipo.FullName}");
                         
                         }
+                        else
+                        {
                             mods.Add(mod);
                             Console.WriteLine($"✅ Mod cargado: {tipo.FullName}");
-                        
+                        }
                     }
                 }
                 catch (ReflectionTypeLoadException ex)
