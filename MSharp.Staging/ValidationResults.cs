@@ -1,6 +1,6 @@
 namespace MSharp.Validation.Models;
 
-// -- Esta clase define el resultado de la validación de una instrucción JSON --
+// -- Esta clase define el resultado de la validación de una instrucción JSON que viene del adapter --
 
 public class InstructionValidationResult
 {
