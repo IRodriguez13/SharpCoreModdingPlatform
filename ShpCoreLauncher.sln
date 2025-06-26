@@ -19,6 +19,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Mods#", "Mods#\Mods#.csproj
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ShpCore.Staging", "ShpCore.Staging\ShpCore.Staging.csproj", "{312B3CD5-ED1B-426E-AE29-7EC6FA765EA0}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ShpCore.Logging", "ShpCore.Logging\ShpCore.Logging.csproj", "{B5373728-523C-4CD8-8B27-52B2F7421138}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -56,5 +58,9 @@ Global
 		{312B3CD5-ED1B-426E-AE29-7EC6FA765EA0}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{312B3CD5-ED1B-426E-AE29-7EC6FA765EA0}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{312B3CD5-ED1B-426E-AE29-7EC6FA765EA0}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B5373728-523C-4CD8-8B27-52B2F7421138}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B5373728-523C-4CD8-8B27-52B2F7421138}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B5373728-523C-4CD8-8B27-52B2F7421138}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B5373728-523C-4CD8-8B27-52B2F7421138}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal

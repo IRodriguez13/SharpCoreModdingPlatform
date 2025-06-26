@@ -1,4 +1,4 @@
-﻿using MSharp.Launcher.Core;
+﻿using ShpCore.Launcher.Core;
 
 class Program
 {
