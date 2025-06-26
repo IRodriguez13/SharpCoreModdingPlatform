@@ -1,11 +1,4 @@
 # MSharpCore ModLoader: Modding C# para Minecraft
-
-
-## ¿Qué es M#?
-
-**SharpCore ModLoader** es un framework que permite crear mods para Minecraft (1.8.9 Forge, por ahora) usando **C#** y herramientas modernas como Visual Studio, integrando la lógica de los mods con el juego en tiempo real a través de un puente entre **Java** y **C#**.  
-El objetivo es **democratizar el modding, hacerlo más accesible y moderno**.
-
 ---
 
 ## Características principales
@@ -30,16 +23,6 @@ Interface (IMsharpMod) --> BridgeCore (Named pipes, Staging System) --> Adapter 
 
 ---
 
-## ¿Cómo funciona?
-
-1. **Lanzador en C#**: Inicia Minecraft y el servidor de Named Pipe.
-2. **Carga de mods**: Busca y carga DLLs de mods escritos en C#.
-3. **Mod puente en Java**: Se conecta al pipe y envía/recibe mensajes con el launcher.
-4. **Eventos y lógica**: Los mods en C# reaccionan a eventos del juego y pueden enviar comandos de vuelta a Minecraft.
-
-
-
--
 
 ## Ejemplo de mod en C#
 
