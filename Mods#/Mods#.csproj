@@ -7,8 +7,10 @@
 	</PropertyGroup>
   
 	<ItemGroup>
-		<ProjectReference Include="..\MSharp.Launcher.Core\MSharp.Launcher.Core.csproj" />
-		<ProjectReference Include="..\MSharp.ModAPI\MSharp.ModAPI.csproj" />
+		<ProjectReference Include="..\ShpCore.Launcher.Core\ShpCore.Launcher.Core.csproj" />
+		<ProjectReference Include="..\ShpCore.ModAPI\ShpCore.ModAPI.csproj" />
+		<ProjectReference Include="..\ShpCore.Logging\ShpCore.Logging.csproj" />
+
 
 	  </ItemGroup>
   

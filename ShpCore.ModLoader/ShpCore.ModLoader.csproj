@@ -1,0 +1,13 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\ShpCore.ModAPI\ShpCore.ModAPI.csproj" />
+    <ProjectReference Include="..\ShpCore.Launcher.Core\ShpCore.Launcher.Core.csproj" />
+  </ItemGroup>
+</Project>
