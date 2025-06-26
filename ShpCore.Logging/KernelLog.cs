@@ -16,6 +16,6 @@ public static class KernelLog
 
     public static void Info(string msg) => Log.Information(msg);
     public static void Warn(string msg) => Log.Warning(msg);
-    public static void Error(string msg, Exception? ex = null) => Log.Error(ex, msg);
+    public static void Panic(string msg, Exception? ex = null) => Log.Error(ex, msg);
     public static void Debug(string msg) => Log.Debug(msg);
 }

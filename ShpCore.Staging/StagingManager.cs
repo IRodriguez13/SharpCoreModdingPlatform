@@ -1,3 +1,5 @@
+using ShpCore.Logging;
+
 namespace MSharp.ModLoader.StagingSystem;
 
 // -- Aca manejo el staging de los payloads en base a las respuestas del adapter --
@@ -22,12 +24,13 @@ public class StagingManager<T>
 		try
 		{
 			_applyCallback(_current); // Aplicamos el cambio actual
-			Console.WriteLine("[Staging] Instruccion aplicada");
+			KernelLog.Debug("[Staging] Instruccion aplicada");
 		}
 		catch (Exception)
 		{
 			MSrevert(); // Automático por si la aplicación falla
-			Console.WriteLine("[Staging] Error al aplicar la instrucción. Se ha revertido el cambio.");
+			KernelLog.Panic("[Staging] Error al aplicar la instrucción. Se ha revertido el cambio.");
+
 			_current = default;
 			_history.Clear();
 			return;
@@ -38,16 +41,18 @@ public class StagingManager<T>
 	{
 		if (_history.Count == 0)
 		{
-			Console.WriteLine("[Staging] No hay versiones previas para hacer rollback.");
+			KernelLog.Panic("[Staging] No hay versiones previas para hacer rollback.");
 			return;
 		}
 
 		// Rollbackear sería limpiar la pila y volver al último estado válido
-		Console.WriteLine("[Staging] Revirtiendo al último estado válido");
+		KernelLog.Debug("[Staging] Revirtiendo al último estado válido");
+
 		_current = _history.Pop();
 		_rollbackCallback(_current);
-		Console.WriteLine("[Staging] Rollback exitoso");
-		Console.WriteLine($"[Staging] Estado actual: {_current}");
+
+		KernelLog.Debug("[Staging] Rollback exitoso");
+		KernelLog.Info($"[Staging] Estado actual: {_current}");
 	}
 
  // Confirmamos estado actual como final. Aca el commit es simplemente dejar current como está y limpiar la pila.

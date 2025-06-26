@@ -4,6 +4,7 @@ using MSharp.Launcher.Core.Models;
 using MSharp.Staging.Instruction_adapters;
 using System.Text;
 using System.Text.Json;
+using ShpCore.Logging;
 
 namespace MSharp.Launcher.Core.Bridge
 {
@@ -21,13 +22,15 @@ namespace MSharp.Launcher.Core.Bridge
         public NamedPipeBridgeConnection(string pipeName = "msharp_bridge", FinishAdapterLayer _adapter = null!)
         {
             this.pipeName = pipeName;
-            this._adapter = new FinishAdapterLayer("msharp_bridge") ?? throw new ArgumentNullException(nameof(_adapter), "El adapter no puede ser nulo.");
+            this._adapter = new FinishAdapterLayer("msharp_bridge");
 
             // Inicializamos el StagingManager con callbacks para aplicar y revertir instrucciones.
             // Estos callbacks pueden ser adaptados para interactuar con tu lógica de modding.
+
             _stageManager = new StagingManager<MSharpInstruction>(
-                applyCallback: instruction => Console.WriteLine($"[Staging] Aplicando instrucción: {instruction.Tipo}"),
-                rollbackCallback: instruction => Console.WriteLine($"[Staging] Revirtiendo instrucción: {instruction.Tipo}")
+
+                applyCallback: instruction => KernelLog.Debug($"[Staging] Aplicando instrucción: {instruction.Tipo}"),
+                rollbackCallback: instruction => KernelLog.Debug($"[Staging] Revirtiendo instrucción: {instruction.Tipo}")
             );
         }
 
@@ -35,7 +38,8 @@ namespace MSharp.Launcher.Core.Bridge
         {
             listenThread = new Thread(() =>
             {
-                for (;;)
+                KernelLog.Debug("[Bridge] Iniciando escucha de Named Pipe..."); 
+                for (; ; )
                 {
                     try
                     {
@@ -43,17 +47,17 @@ namespace MSharp.Launcher.Core.Bridge
                             pipeName,
                             PipeDirection.InOut,
                             1,
-                        #if WINDOWS
+#if WINDOWS
                             PipeTransmissionMode.Message,
-                        #else
+#else
                             PipeTransmissionMode.Byte,
-                        #endif
+#endif
                             PipeOptions.Asynchronous
                         );
 
-                        Console.WriteLine("[Bridge] Pipe levantado. Esperando conexión Java...");
+                        KernelLog.Debug("[Bridge] Pipe levantado. Esperando conexión Java...");
                         server.WaitForConnection();
-                        Console.WriteLine("[Bridge] ¡Conexión Java ↔ C# establecida!");
+                        KernelLog.Debug("[Bridge] ¡Conexión Java ↔ C# establecida!");
 
                         byte[] buffer = new byte[2048];
                         while (server.IsConnected)
@@ -68,17 +72,17 @@ namespace MSharp.Launcher.Core.Bridge
                     }
                     catch (IOException ioEx)
                     {
-                        Console.WriteLine($"[Bridge] I/O Pipe error: {ioEx.Message}");
+                        KernelLog.Panic($"[Bridge] I/O Pipe error: {ioEx.Message}");
                     }
                     catch (Exception ex)
                     {
-                        Console.WriteLine($"[Bridge] Error general: {ex.Message}");
+                        KernelLog.Panic($"[Bridge] Error general: {ex.Message}");
                     }
                     finally
                     {
                         server?.Dispose();
                         server = null;
-                        Console.WriteLine("[Bridge] Pipe cerrado. Esperando nueva conexión...");
+                        KernelLog.Info("[Bridge] Pipe cerrado. Esperando nueva conexión...");
                         Thread.Sleep(1000);
                     }
                 }
@@ -97,21 +101,24 @@ namespace MSharp.Launcher.Core.Bridge
             {
                 if (server is { IsConnected: false })
                 {
-                    Console.WriteLine("[Bridge] No se puede enviar mensaje. No hay conexión.");
+                    KernelLog.Panic("[Bridge] No se puede enviar mensaje. No hay conexión.");
                     return;
                 }
 
                 byte[] buffer = Encoding.UTF8.GetBytes(message);
 
-                if (server is null) throw new InvalidOperationException("[Bridge] El servidor de pipe no está inicializado.");
-
+                if (server is null)
+                {
+                    KernelLog.Panic("[Bridge] El servidor de pipe no está inicializado.");
+                    return;
+                }
                 server.Write(buffer, 0, buffer.Length);
                 server.Flush();
 
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"[Bridge] Error al enviar por pipe: {ex.Message}");
+                KernelLog.Panic($"[Bridge] Error al enviar por pipe: {ex.Message}");
             }
         }
 
@@ -122,7 +129,7 @@ namespace MSharp.Launcher.Core.Bridge
                 var payload = JsonSerializer.Deserialize<MSharpInstruction>(json);
                 if (payload == null)
                 {
-                    Console.WriteLine("[Bridge] Dev, Instrucción vacía o inválida.");
+                    KernelLog.Panic("[Bridge] Dev, La instrucción no puede estar vacía o ser inválida.");
                     return;
                 }
 
@@ -134,18 +141,17 @@ namespace MSharp.Launcher.Core.Bridge
                 if (!success)
                 {
                     _stageManager.MSrevert();
-                    Console.WriteLine("[staging] Instrucción fallida. Se hizo rollback.");
+                    KernelLog.Panic("[staging] Instrucción fallida. Se hizo rollback.");
                     return;
                 }
 
                 _stageManager.MScommit();
-                Console.WriteLine("[staging] Instrucción aplicada y comiteada.");
-                Console.WriteLine($"[staging] payload Comitteado: {payload?.Tipo} - {payload?.Entidad}");
+                KernelLog.Debug($"[staging] payload Comitteado: {payload?.Tipo} - {payload?.Entidad}");
 
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"[staging] Error procesando instrucción: {ex.Message}");
+                KernelLog.Panic($"[staging] Error procesando instrucción: {ex.Message}");
             }
         }
 
@@ -154,7 +160,7 @@ namespace MSharp.Launcher.Core.Bridge
         {
             if (_adapter == null)
             {
-                Console.WriteLine("[adapter] No hay adapter configurado.");
+                KernelLog.Panic("[adapter] No hay adapter configurado.");
                 return false;
             }
 
@@ -165,7 +171,8 @@ namespace MSharp.Launcher.Core.Bridge
 
                 if (!validationResult.IsValid)
                 {
-                    Console.WriteLine($"[validator] Instrucción inválida: {validationResult.ErrorMessage}");
+                    KernelLog.Panic($"[validator] Instrucción inválida: {validationResult.ErrorMessage}");
+
                     return false;
                 }
 
@@ -175,7 +182,7 @@ namespace MSharp.Launcher.Core.Bridge
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"[staging] Error en ExecuteInstruction: {ex.Message}");
+                KernelLog.Debug($"[staging] Error en ExecuteInstruction: {ex.Message}");
                 return false;
             }
         }

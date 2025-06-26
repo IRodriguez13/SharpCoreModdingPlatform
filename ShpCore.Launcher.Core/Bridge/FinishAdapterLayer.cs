@@ -39,6 +39,8 @@ public class FinishAdapterLayer : IInstructionAdapter
     {
         try
         {
+            KernelLog.Debug($"[FinishAdapterLayer] Enviando payload al adaptador: {instruction}");
+
             using NamedPipeClientStream client = new(".", _pipeName, PipeDirection.InOut, PipeOptions.None);
             client.Connect(2000); // Timeout de 2s para esperar la conexión antes del serialize del payl
 
@@ -56,12 +58,15 @@ public class FinishAdapterLayer : IInstructionAdapter
             // Leer respuesta
             byte[] responseBuffer = new byte[256];
             int bytesRead = client.Read(responseBuffer, 0, responseBuffer.Length);
+
+            KernelLog.Debug($"[FinishAdapterLayer] Respuesta del adaptador: {Encoding.UTF8.GetString(responseBuffer, 0, bytesRead)}");
+
             return Encoding.UTF8.GetString(responseBuffer, 0, bytesRead);
         }
         catch (Exception ex)
         {
-            KernelLog.Error($"[FinishAdapterLayer] Error al enviar el payload al adaptador: {ex.Message}");
-            return null; 
+            KernelLog.Panic($"[FinishAdapterLayer] Error al enviar el payload al adaptador: {ex.Message}");
+            return null;
         }
     }
 }

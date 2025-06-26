@@ -3,6 +3,7 @@ using System;
 using System.IO;
 using MSharp.Launcher.Core.Bridge;
 using MSharp.Launcher.Core.ModRunner;
+using ShpCore.Logging;
 
 namespace MSharp.Launcher.Core;
 
@@ -35,6 +36,8 @@ public class LauncherRunner
                         "--userProperties {} --userType mojang " +
                         "--tweakClass net.minecraftforge.fml.common.launcher.FMLTweaker";
 
+        KernelLog.Debug("[Launcher] Iniciando Minecraft con los siguientes parámetros:");
+
         // Here we build the full command line to launch Minecraft with the specified settings 
         string launchArgs = $"{vmArgs} {javaArgs} -cp \"{classpath}\" {mainClass} {forgeArgs}";
 
@@ -62,14 +65,14 @@ public class LauncherRunner
 
         // mod loader
         string modPath = @"D:\Users\pc\Desktop\RoadToM#\Mods#\Mods";
-        Console.WriteLine("🔎 Cargando mods C# desde carpeta:");
-        Console.WriteLine(modPath);
+        KernelLog.Debug("[ModLoader] Cargando mods C# desde carpeta:");
+        KernelLog.Debug(modPath);
 
         var mods = ModLoader.CargarMods(modPath);
 
         foreach (var mod in mods)
         {
-            Console.WriteLine("▶️ Ejecutando OnStart() de mod...");
+            Console.WriteLine("[ModLoader] Ejecutando OnStart() de mod...");
             mod.OnStart();
         }
 
@@ -77,18 +80,20 @@ public class LauncherRunner
         NamedPipeBridgeConnection bridge = new();
         bridge.OnMessage += msg =>
         {
-            Console.WriteLine($"📨 Mensaje del mod puente: {msg}");
+            KernelLog.Debug($"[ModLoader] Mensaje del mod puente: {msg}");
+
             foreach (var mod in mods)
+
                 mod.OnEvent("BRIDGE_MSG", msg);
 
         };
 
-        Console.WriteLine("🟪 Iniciando servidor de Named Pipe...");
+        KernelLog.Debug("[Bridge] Iniciando servidor de Named Pipe...");
         bridge.Start();
 
         // Run Minecraft with the configured settings
 
-        Console.WriteLine("Iniciando Minecraft desde C#...");
+        KernelLog.Debug("[Bridge] Iniciando Minecraft desde C#...");
         proceso.Start();
         proceso.BeginOutputReadLine();
         proceso.BeginErrorReadLine();
