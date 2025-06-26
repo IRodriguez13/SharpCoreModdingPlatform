@@ -6,7 +6,8 @@
 - **Mods en C#**: Escribe mods usando C# y Visual Studio, sin depender de Java.
 - **Comunicación en tiempo real**: Sincronización bidireccional entre Minecraft (Java) y mods en C# usando Named Pipes.
 - **Carga dinámica de mods**: Los mods se cargan **como archivos .m#** y pueden reaccionar a eventos del juego.
-- **Arquitectura extensible**: Pensado para integrar herramientas visuales como Unity en el futuro.
+- **Arquitectura extensible**: Pensado para desarrollar mods desde cualquier lenguaje de programación hasta cualquier plataforma que implemente la interfaz de IInstructionAdapter.
+- **Assets en Unity**: Pensado para integrar herramientas visuales como Unity en el futuro.
 - **Ejemplo de mod**: Incluye un mod de ejemplo para empezar rápido.
 
 ---
