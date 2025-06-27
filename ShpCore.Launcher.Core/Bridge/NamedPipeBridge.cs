@@ -17,7 +17,7 @@ namespace MSharp.Launcher.Core.Bridge
         private readonly FinishAdapterLayer _adapter; // Adapter para procesar instrucciones
         private readonly StagingManager<MSharpInstruction> _stageManager; // Manejador de staging para aplicar y revertir instrucciones
 
-        public event Action<string>? OnMessage; // Esto queda por compatibilidad, pero  no es el punto de entrada principal
+        public event Action<string>? OnMessage; // [unused] Esto queda por compatibilidad, pero  no es el punto de entrada principal
 
         public NamedPipeBridgeConnection(string pipeName = "msharp_bridge", FinishAdapterLayer _adapter = null!)
         {
@@ -39,7 +39,7 @@ namespace MSharp.Launcher.Core.Bridge
             listenThread = new Thread(() =>
             {
                 KernelLog.Debug("[Bridge] Iniciando escucha de Named Pipe..."); 
-                for (; ; )
+                for (;;)
                 {
                     try
                     {
@@ -47,16 +47,18 @@ namespace MSharp.Launcher.Core.Bridge
                             pipeName,
                             PipeDirection.InOut,
                             1,
-#if WINDOWS
+                    #if WINDOWS
                             PipeTransmissionMode.Message,
-#else
+                    #else
                             PipeTransmissionMode.Byte,
-#endif
+                    #endif
                             PipeOptions.Asynchronous
                         );
 
                         KernelLog.Debug("[Bridge] Pipe levantado. Esperando conexión Java...");
+
                         server.WaitForConnection();
+                        
                         KernelLog.Debug("[Bridge] ¡Conexión Java ↔ C# establecida!");
 
                         byte[] buffer = new byte[2048];
@@ -95,6 +97,7 @@ namespace MSharp.Launcher.Core.Bridge
             listenThread.Start();
         }
 
+        // No me intersa manejar los mensajes del lado del cliente.
         public void Send(string message)
         {
             try
@@ -161,22 +164,15 @@ namespace MSharp.Launcher.Core.Bridge
             if (_adapter == null)
             {
                 KernelLog.Panic("[adapter] No hay adapter configurado.");
+               
                 return false;
             }
 
             try
             {
-                var validationResult = _adapter.Validate(payload) ?? throw new InvalidOperationException("[adapter] El adapter devolvió un resultado de validación nulo.");
+                var validationResult = _adapter.Validate(payload);
 
-
-                if (!validationResult.IsValid)
-                {
-                    KernelLog.Panic($"[validator] Instrucción inválida: {validationResult.ErrorMessage}");
-
-                    return false;
-                }
-
-                var result = _adapter.Apply(payload); // Acá se habla con Java mediante la implementacion de la interfaz IInstructionAdapter
+                bool result = _adapter.Apply(payload); // Acá se habla con Java mediante la implementacion de la interfaz IInstructionAdapter
 
                 return result;
             }

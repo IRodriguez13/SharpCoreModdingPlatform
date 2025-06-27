@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <ItemGroup>
-    <ProjectReference Include="..\ShpCore.Launcher.Core\ShpCore.Launcher.Core.csproj" />
-    <ProjectReference Include="../ShpCore.ModLoader/ShpCore.ModLoader.csproj" />
+    <ProjectReference Include="../ShpCore.Launcher.Core/ShpCore.Launcher.Core.csproj"/>
+    <ProjectReference Include="../ShpCore.ModLoader/ShpCore.ModLoader.csproj"/>
     <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
     <PackageReference Include="System.Text.Json" Version="9.0.4" />
   </ItemGroup>

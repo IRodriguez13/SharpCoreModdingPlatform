@@ -68,7 +68,7 @@ public class LauncherRunner
         KernelLog.Debug("[ModLoader] Cargando mods C# desde carpeta:");
         KernelLog.Debug(modPath);
 
-        var mods = ModLoader.CargarMods(modPath);
+        // var mods = ModLoader.CargarMods(modPath);
 
         foreach (var mod in mods)
         {
