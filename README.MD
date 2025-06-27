@@ -1,6 +1,9 @@
 # MSharpCore ModLoader: Modding C# para Minecraft
 ---
+## ¿Qué es?
 
+- SharpCore es un microkernel de modding con una arquitectura pensada para escribir mods desde cualquier lenguaje de programación hacia cualquier plataforma que soporte named pipes como protocolo. 
+---
 ## Características principales
 
 - **Mods en C#**: Escribe mods usando C# y Visual Studio, sin depender de Java.
@@ -9,10 +12,9 @@
 - **Arquitectura extensible**: Pensado para desarrollar mods desde cualquier lenguaje de programación hasta cualquier plataforma que implemente la interfaz de IInstructionAdapter.
 - **Assets en Unity**: Pensado para integrar herramientas visuales como Unity en el futuro.
 - **Ejemplo de mod**: Incluye un mod de ejemplo para empezar rápido.
-
 ---
 
-## Arquitectura
+## Flujo
 
 ```
 Interface (IMsharpMod) --> BridgeCore (Named pipes, Staging System) --> Adapter Response(OK/FAIL) --> if OK Adapter Game implementation else Rollback
