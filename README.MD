@@ -8,10 +8,9 @@
 
 - **Mods en C#**: Escribe mods usando C# y Visual Studio, sin depender de Java.
 - **Comunicación en tiempo real**: Sincronización bidireccional entre Minecraft (Java) y mods en C# usando Named Pipes.
-- **Carga dinámica de mods**: Los mods se cargan **como archivos .m#** y pueden reaccionar a eventos del juego.
+- **Carga dinámica de mods**: Los mods se cargan sin compilar, simplemente hay que enviar un json que mapee exactamente lo que necesita el juego.
 - **Arquitectura extensible**: Pensado para desarrollar mods desde cualquier lenguaje de programación hasta cualquier plataforma que implemente la interfaz de IInstructionAdapter.
-- **Assets en Unity**: Pensado para integrar herramientas visuales como Unity en el futuro.
-- **Ejemplo de mod**: Incluye un mod de ejemplo para empezar rápido.
+- **Assets en Unity**: Pensado para integrar herramientas visuales como Unity desde el lado c#.
 ---
 
 ## Flujo
@@ -20,9 +19,9 @@
 Interface (IMsharpMod) --> BridgeCore (Named pipes, Staging System) --> Adapter Response(OK/FAIL) --> if OK Adapter Game implementation else Rollback
 ```
 
-- **Java Side:** Mod Forge (`MSharpBridgeMod`) que actúa como cliente de la pipe.
+- **Java Side:** Mod Forge (`MSharpBridgeMod`) que actúa como cliente del pipe.
 - **C# Side:** Launcher que carga mods, gestiona la pipe y despacha eventos.
-- **Comunicación:** Named Pipes para mensajes en tiempo real.
+- **Comunicación:** Named Pipes que transfieren el payload que se procesa en el núcleo y se implementa en el adaptador hacia el juego.
 
 ---
 
@@ -33,7 +32,7 @@ Interface (IMsharpMod) --> BridgeCore (Named pipes, Staging System) --> Adapter 
 public class ModVioleta : IMsharpMod
 {
     public void OnStart() => Console.WriteLine("Mod de ejemplo iniciado.");
-    public void OnEvent(string type, object? payload = null)
+    public void OnEvent(string type, object? payload = {valores que acepte las entidades de minecraft})
     {
         Console.WriteLine($"Evento recibido desde Java: {type} | Payload: {payload}");
     }
