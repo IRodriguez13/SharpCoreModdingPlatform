@@ -29,10 +29,10 @@ Interface (IMsharpMod) --> BridgeCore (Named pipes, Staging System) --> Adapter 
 ## Ejemplo de mod en C#
 
 ```csharp
-public class ModVioleta : IMsharpMod
+public class TestCsharpMod : IMsharpMod
 {
     public void OnStart() => Console.WriteLine("Mod de ejemplo iniciado.");
-    public void OnEvent(string type, object? payload = {valores que acepte las entidades de minecraft})
+    public void OnEvent(string type, object? payload = {Correct Forge Values})
     {
         Console.WriteLine($"Evento recibido desde Java: {type} | Payload: {payload}");
     }
