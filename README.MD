@@ -31,7 +31,7 @@ Interface (IMsharpMod) --> BridgeCore (Named pipes, Staging System) --> Adapter 
 ```csharp
 public class TestCsharpMod : IMsharpMod
 {
-    public void OnStart() => Console.WriteLine("Mod de ejemplo iniciado.");
+    public void OnStart() => Console.WriteLine("Test Mod iniciado.");
     public void OnEvent(string type, object? payload = {Correct Forge Values})
     {
         Console.WriteLine($"Evento recibido desde Java: {type} | Payload: {payload}");
