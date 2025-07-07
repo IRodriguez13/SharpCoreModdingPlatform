@@ -3,10 +3,13 @@ using MSharp.Launcher.Core.Models;
 
 namespace MSharp.Staging.Instruction_adapters;
 
-// -- En esta interfaz defino los métodos que deben implementar los adapters -- 
+// -- Interface to Validate instrutions -- 
 
 public interface IInstructionAdapter
 {
-	InstructionValidationResult Validate(MSharpInstruction instruction);
-	bool Apply(MSharpInstruction instruction);
+
+    InstructionValidationResult Validate(MSharpInstruction instruction);
+    bool Apply(MSharpInstruction instruction);
+
 }
+

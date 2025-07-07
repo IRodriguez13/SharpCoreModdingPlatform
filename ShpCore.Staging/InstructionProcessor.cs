@@ -11,6 +11,7 @@ namespace MSharp.Staging;
 // -- Acá gestionamos las respuestas del adapter y manejamos la lógica de staging --
 // -- Esta clase es el core del sistema de staging --
 
+
 public class InstructionProcessor
 {
 	private readonly IInstructionValidator _validator;
@@ -28,11 +29,13 @@ public class InstructionProcessor
 	{
 		try
 		{
+		
 			InstructionValidationResult result = _validator.Validate(json);
 			if (!result.IsValid) return result;
 
 			var instruction = JsonSerializer.Deserialize<MSharpInstruction>(json);
 
+		
 			if (instruction is not null)
 			{
 				_stager.MSadd(instruction);
@@ -46,7 +49,8 @@ public class InstructionProcessor
 			_stager.MSrevert();
 			return InstructionValidationResult.Failure("[validator] Adapter rejected the instruction");
 		}
-		catch
+
+	  catch
 		{
 			return InstructionValidationResult.Failure("[validator] An error occurred while processing the instruction");
 			
