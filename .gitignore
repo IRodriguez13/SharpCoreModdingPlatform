@@ -1,6 +1,6 @@
 # Ignore mods# folder
 *.Mods#/
-
+*.swp
 # Ignore system files
 .DS_Store
 Thumbs.db
