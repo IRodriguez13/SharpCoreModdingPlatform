@@ -1,27 +1,33 @@
-# MSharpCore ModLoader: Modding C# para Minecraft
+# SharpCore ModLoader: Modding C# for Minecraft Forge
 ---
-## ¿Qué es?
+## What is SharpCore?
 
-- SharpCore es un microkernel de modding con una arquitectura pensada para escribir mods desde cualquier lenguaje de programación hacia cualquier plataforma que soporte named pipes como protocolo. 
+- SharpCore is a lightweight modding microkernel with an architecture designed to allow mod development from any programming language targeting any platform that supports named pipes as a protocol. 
 ---
-## Características principales
+## Key Features
 
-- **Mods en C#**: Escribe mods usando C# y Visual Studio, sin depender de Java.
-- **Comunicación en tiempo real**: Sincronización bidireccional entre Minecraft (Java) y mods en C# usando Named Pipes.
-- **Carga dinámica de mods**: Los mods se cargan sin compilar, simplemente hay que enviar un json que mapee exactamente lo que necesita el juego.
-- **Arquitectura extensible**: Pensado para desarrollar mods desde cualquier lenguaje de programación hasta cualquier plataforma que implemente la interfaz de IInstructionAdapter.
-- **Assets en Unity**: Pensado para integrar herramientas visuales como Unity desde el lado c#.
+- **Mods in C#**: Write mods using C# and Visual Studio, with no dependency on Java.
+
+- **Real-time communication**: Bidirectional synchronization between Minecraft (Java) and C# mods via Named Pipes.
+
+- **Dynamic mod loading**: Mods are loaded without compilation; you just need to send a JSON mapping exactly what the game requires.
+
+- **Extensible architecture**: Designed to support modding from any language to any platform implementing the IInstructionAdapter interface.
+
+- **Unity Assets support**: Built with visual tools like Unity in mind, integrated from the C# side.
 ---
 
-## Flujo
+## Flow
 
 ```
 Interface (IMsharpMod) --> BridgeCore (Named pipes, Staging System) --> Adapter Response(OK/FAIL) --> if OK Adapter Game implementation else Rollback
 ```
 
-- **Java Side:** Mod Forge (`MSharpBridgeMod`) que actúa como cliente del pipe.
-- **C# Side:** Launcher que carga mods, gestiona la pipe y despacha eventos.
-- **Comunicación:** Named Pipes que transfieren el payload que se procesa en el núcleo y se implementa en el adaptador hacia el juego.
+- **Java Side**: A Forge mod (MSharpBridgeMod) acting as the named pipe client.
+
+- **C# Side**: A launcher that loads mods, manages the pipe, and dispatches events.
+
+- **Communication**: Named Pipes transfer the payload to the core, which is then handled by the adapter implementation for the game.
 
 ---
 
@@ -31,10 +37,10 @@ Interface (IMsharpMod) --> BridgeCore (Named pipes, Staging System) --> Adapter 
 ```csharp
 public class TestCsharpMod : IMsharpMod
 {
-    public void OnStart() => Console.WriteLine("Test Mod iniciado.");
+    public void OnStart() => Console.WriteLine("Test Mod running.");
     public void OnEvent(string type, object? payload = {Correct Forge Values})
     {
-        Console.WriteLine($"Evento recibido desde Java: {type} | Payload: {payload}");
+        Console.WriteLine($"Event cached from Forge side: {type} | Payload: {payload}");
     }
     public void OnTick() { }
 }
@@ -42,5 +48,9 @@ public class TestCsharpMod : IMsharpMod
 
 ## Licencia
 
-Este proyecto se distribuye bajo la licencia LGPL v2.1 o posterior (ver archivos LICENSE).
+*This project is licensed under the LGPL v2.1 or later (see LICENSE files).*
+
+### Contact
+
+- <ivanrwcm25@gmail.com>
 
