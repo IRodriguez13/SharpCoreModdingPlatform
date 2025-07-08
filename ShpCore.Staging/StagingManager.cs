@@ -6,58 +6,58 @@ namespace MSharp.ModLoader.StagingSystem;
 
 public class StagingManager<T>
 {
-	private readonly Stack<T> _history = new(); // El registro de cambios (en RAM)
-	private T? _current; // Estado actual del payload
-	private readonly Action<T> _applyCallback; //
-	private readonly Action<T> _rollbackCallback;
+    private readonly Stack<T> _history = new(); // El registro de cambios (en RAM)
+    private T? _current; // Estado actual del payload
+    private readonly Action<T> _applyCallback; //
+    private readonly Action<T> _rollbackCallback;
 
-	public StagingManager(Action<T> applyCallback, Action<T> rollbackCallback)
-	{
-		_applyCallback = applyCallback;
-		_rollbackCallback = rollbackCallback;
-	}
+    public StagingManager(Action<T> applyCallback, Action<T> rollbackCallback)
+    {
+        _applyCallback = applyCallback;
+        _rollbackCallback = rollbackCallback;
+    }
 
-	public void MSadd(T next)
-	{
-		if (_current != null) _history.Push(_current); _current = next;
+    public void MSadd(T next)
+    {
+        if (_current != null) _history.Push(_current); _current = next;
 
-		try
-		{
-			_applyCallback(_current); // Aplicamos el cambio actual
-			KernelLog.Debug("[Staging] Instruccion aplicada");
-		}
-		catch (Exception)
-		{
-			MSrevert(); // Automático por si la aplicación falla
-			KernelLog.Panic("[Staging] Error al aplicar la instrucción. Se ha revertido el cambio.");
+        try
+        {
+            _applyCallback(_current); // Aplicamos el cambio actual
+            KernelLog.Debug("[Staging] Instruccion aplicada");
+        }
+        catch (Exception)
+        {
+            MSrevert(); // Automático por si la aplicación falla
+            KernelLog.Panic("[Staging] Error al aplicar la instrucción. Se ha revertido el cambio.");
 
-			_current = default;
-			_history.Clear();
-			return;
-		}
-	}
+            _current = default;
+            _history.Clear();
+            return;
+        }
+    }
 
-	public void MSrevert()
-	{
-		if (_history.Count == 0)
-		{
-			KernelLog.Panic("[Staging] No hay versiones previas para hacer rollback.");
-			return;
-		}
+    public void MSrevert()
+    {
+        if (_history.Count == 0)
+        {
+            KernelLog.Panic("[Staging] No hay versiones previas para hacer rollback.");
+            return;
+        }
 
-		// Rollbackear sería limpiar la pila y volver al último estado válido
-		KernelLog.Debug("[Staging] Revirtiendo al último estado válido");
+        // Rollbackear sería limpiar la pila y volver al último estado válido
+        KernelLog.Debug("[Staging] Revirtiendo al último estado válido");
 
-		_current = _history.Pop();
-		_rollbackCallback(_current);
+        _current = _history.Pop();
+        _rollbackCallback(_current);
 
-		KernelLog.Debug("[Staging] Rollback exitoso");
-		KernelLog.Info($"[Staging] Estado actual: {_current}");
-	}
+        KernelLog.Debug("[Staging] Rollback exitoso");
+        KernelLog.Info($"[Staging] Estado actual: {_current}");
+    }
 
- // Confirmamos estado actual como final. Aca el commit es simplemente dejar current como está y limpiar la pila.
-	public void MScommit() => _history.Clear();
+    // Confirmamos estado actual como final. Aca el commit es simplemente dejar current como está y limpiar la pila.
+    public void MScommit() => _history.Clear();
 
-// Devuelve el estado actual, o null si no hay ninguno - es como una memoria ram
-	public T? MSgetCurrent() => _current; 
+    // Devuelve el estado actual, o null si no hay ninguno - es como una memoria ram
+    public T? MSgetCurrent() => _current;
 }
