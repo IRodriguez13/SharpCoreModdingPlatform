@@ -32,7 +32,7 @@ Interface (IMsharpMod) --> BridgeCore (Named pipes, Staging System) --> Adapter 
 ---
 
 
-## Ejemplo de mod en C#
+## Example mod in C#
 
 ```csharp
 public class TestCsharpMod : IMsharpMod
@@ -46,7 +46,7 @@ public class TestCsharpMod : IMsharpMod
 }
 ```
 
-## Licencia
+## License
 
 *This project is licensed under the LGPL v2.1 or later (see LICENSE files).*
 
