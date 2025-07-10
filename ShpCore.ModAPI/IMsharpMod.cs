@@ -1,6 +1,6 @@
 ﻿namespace MSharp.ModAPI
 {
-    // -- Esta es la interfaz a implementar por todas las distrubuciones que moddeen con SharpCore --
+    // -- This is the universal interface for SharpCore Mods --
     public interface IMsharpMod
     {
         void OnStart();
