@@ -14,46 +14,46 @@ namespace MSharp.Staging;
 
 public class InstructionProcessor
 {
-	private readonly IInstructionValidator _validator;
-	private readonly IInstructionAdapter _adapter;
-	private readonly StagingManager<MSharpInstruction> _stager;
+    private readonly IInstructionValidator _validator;
+    private readonly IInstructionAdapter _adapter;
+    private readonly StagingManager<MSharpInstruction> _stager;
 
-	public InstructionProcessor(IInstructionValidator validator, IInstructionAdapter adapter, StagingManager<MSharpInstruction> stager)
-	{
-		_validator = validator;
-		_adapter = adapter;
-		_stager = stager;
-	}
+    public InstructionProcessor(IInstructionValidator validator, IInstructionAdapter adapter, StagingManager<MSharpInstruction> stager)
+    {
+        _validator = validator;
+        _adapter = adapter;
+        _stager = stager;
+    }
 
-	public InstructionValidationResult Process(string json)
-	{
-		try
-		{
-		
-			InstructionValidationResult result = _validator.Validate(json);
-			if (!result.IsValid) return result;
+    public InstructionValidationResult Process(string json)
+    {
+        try
+        {
 
-			var instruction = JsonSerializer.Deserialize<MSharpInstruction>(json);
+            InstructionValidationResult result = _validator.Validate(json);
+            if (!result.IsValid) return result;
 
-		
-			if (instruction is not null)
-			{
-				_stager.MSadd(instruction);
+            var instruction = JsonSerializer.Deserialize<MSharpInstruction>(json);
 
-				if (_adapter.Apply(instruction))
-				{
-					_stager.MScommit();
-					return InstructionValidationResult.Success();
-				}
-			}
-			_stager.MSrevert();
-			return InstructionValidationResult.Failure("[validator] Adapter rejected the instruction");
-		}
 
-	  catch
-		{
-			return InstructionValidationResult.Failure("[validator] An error occurred while processing the instruction");
-			
-		}
-	}
+            if (instruction is not null)
+            {
+                _stager.MSadd(instruction);
+
+                if (_adapter.Apply(instruction))
+                {
+                    _stager.MScommit();
+                    return InstructionValidationResult.Success();
+                }
+            }
+            _stager.MSrevert();
+            return InstructionValidationResult.Failure("[validator] Adapter rejected the instruction");
+        }
+
+        catch
+        {
+            return InstructionValidationResult.Failure("[validator] An error occurred while processing the instruction");
+
+        }
+    }
 }
