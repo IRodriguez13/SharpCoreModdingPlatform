@@ -1,3 +1,4 @@
+package com.example.examplemod;
 
 @Mod(modid = "msharp", version = "1.0", name = "MSharp Mod")
 public class MSharpMod {

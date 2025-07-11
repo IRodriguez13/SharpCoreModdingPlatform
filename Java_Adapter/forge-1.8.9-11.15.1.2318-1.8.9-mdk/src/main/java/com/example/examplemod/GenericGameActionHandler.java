@@ -1,3 +1,4 @@
+package com.example.examplemod;
 public class GenericGameActionHandler implements InstructionHandler {
     @Override
     public void handle(InstructionPayload payload) throws Exception {
