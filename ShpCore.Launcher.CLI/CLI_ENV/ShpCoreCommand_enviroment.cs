@@ -4,6 +4,7 @@ using System.IO;
 using ShpCore.Logging;
 using System.Threading.Tasks;
 using SharpCore.Kernel.Init;
+using System.Runtime.InteropServices;
 
 
 // USO DE EJEMPLO: sharpcore run --protocol namedpipe --adapter forge --payload ./mods/axel.json
@@ -18,29 +19,46 @@ public static class SharpCoreCLI
 
         RootCommand root = new("CLI oficial de SharpCore")
         {
-            Name = "shpcore"
+            Name = "sharpcore"
         };
 
         var protocolOption = new Option<string>("--protocol", "Protocolo de transporte")
         {
             IsRequired = false
-        }.FromAmong("namedpipe", "grpc", "file");
+        }.FromAmong("namedpipe", "grpc", "unix");
 
-        var adapterOption = new Option<string>("--adapter", "Adaptador de plataforma")
+        var adapterOption = new Option<string>("--adapter", "Ruta al adaptador")
         {
             IsRequired = false
-        }.FromAmong("forge", "gba", "ps2");
+        };
+
 
         Command neofetch = new("corefetch", "Muestra información del núcleo SharpCore");
-                neofetch.SetHandler(() =>
-                {
-                    CoreFecth();
-                    KernelLog.Info("Versión: " + File.ReadAllText("VERSION.txt").Trim());
-                    KernelLog.Info("Autor: Ivan Rodriguez (ivanr013)");
-                    KernelLog.Info("GitHub: https://github.com/IRodriguez13/SharpCore_forge");
-                    KernelLog.Info("Distro: SharpCore Forge");
-                }
-            );
+
+        neofetch.SetHandler(() =>
+        {
+            CoreFecth();
+
+            var version = File.ReadAllText("VERSION.txt").Trim();
+            var os = RuntimeInformation.IsOSPlatform(OSPlatform.Windows) ? "Windows" :
+                     RuntimeInformation.IsOSPlatform(OSPlatform.Linux) ? "Linux" :
+                     RuntimeInformation.IsOSPlatform(OSPlatform.OSX) ? "macOS" : "Unknown";
+
+            var arch = RuntimeInformation.OSArchitecture;
+            var runtime = RuntimeInformation.FrameworkDescription;
+           
+            Console.ForegroundColor = ConsoleColor.Yellow;
+
+            KernelLog.Info($"Versión: {version}");
+            KernelLog.Info("Autor: Iván Rodriguez (ivanr013) <ivanrwcm25@gmail.com>");
+            KernelLog.Info($"Runtime: {os} {arch} / {runtime}");
+            KernelLog.Info("GitHub: https://github.com/IRodriguez13/SharpCore_forge");
+            KernelLog.Info("Adapter: No selected (use --adapter /path/to/adapter)");
+            KernelLog.Info("ASCII font: Banner3 (logo), 3x5 (version)");
+
+            Console.ResetColor();
+        });
+
 
         Command versionCommand = new("--version", "Muestra la versión actual del núcleo SharpCore");
         versionCommand.AddAlias("-v");
@@ -53,8 +71,8 @@ public static class SharpCoreCLI
 
 
         Command HelpCommand = new("--utils", "Muestra la ayuda del CLI");
-        HelpCommand.AddAlias("-u");
-        HelpCommand.AddAlias("-U");
+        HelpCommand.AddAlias("--u");
+        HelpCommand.AddAlias("--U");
 
         HelpCommand.SetHandler(() =>
         {
@@ -69,17 +87,23 @@ public static class SharpCoreCLI
         var payloadOption = new Option<string>("--payload", "Ruta al archivo JSON con el payload") { IsRequired = true };
         runCommand.AddOption(payloadOption);
 
-        runCommand.SetHandler((string payloadPath, string protocol, string adapter) =>
+        runCommand.SetHandler((string payloadPath, string protocol, string adapterPath) =>
         {
             if (!File.Exists(payloadPath))
             {
-                KernelLog.Panic($"El archivo {payloadPath} no existe.");
+                KernelLog.Panic($"(PAYLOAD) El archivo {payloadPath} no existe.");
+                return;
+            }
+
+            if (!Directory.Exists(adapterPath))
+            {
+                KernelLog.Panic($"(ADAPTER) La ruta del adaptador '{adapterPath}' no existe. Asegurate de clonar el adaptador.");
                 return;
             }
 
             try
             {
-                SharpCoreKernel.Run(payloadPath, protocol, adapter);
+                SharpCoreKernel.Run(payloadPath, protocol, adapterPath);
             }
             catch (Exception ex)
             {
@@ -100,7 +124,7 @@ public static class SharpCoreCLI
         @"SharpCore CLI - Uso básico
 
         Comandos:
-        --protocol    [namedpipe|grpc|file]        Protocolo de transporte
+        --protocol    [namedpipe|grpc|unix]        Protocolo de transporte
         --adapter     [forge|gba|ps2]              Adaptador (consola/juego destino)
         --payload     path/to/payload.json         Ruta del archivo de instrucción
 
@@ -113,7 +137,6 @@ public static class SharpCoreCLI
     {
         var banner = File.ReadAllText("Banner.txt");
         Console.WriteLine(banner);
-    
     }
 
 }

@@ -12,6 +12,7 @@ public static class ProtocolFactory
             "grpc" => new GrpcProtocol(),
             "file" => new FileProtocol(),
             _ => throw new ArgumentException($"Unknown protocol: {protocol}")
+
         };
     }
 }
