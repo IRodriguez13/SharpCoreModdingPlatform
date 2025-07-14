@@ -3,13 +3,11 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.0.31903.59
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ShpCore.Launcher.Core", "ShpCore.Launcher.Core\ShpCore.Launcher.Core.csproj", "{8EA79B1E-EF0C-48F8-9237-C1A8D11BAF3D}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ShpCore.Kernel", "ShpCore.Kernel\ShpCore.Launcher.Kernel.csproj", "{8EA79B1E-EF0C-48F8-9237-C1A8D11BAF3D}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ShpCore.Launcher.CLI", "ShpCore.Launcher.CLI\ShpCore.Launcher.CLI.csproj", "{0B6331FC-86DE-40D0-9355-5B844E055CFB}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ShpCore.MCInterop", "ShpCore.MCInterop\ShpCore.MCInterop.csproj", "{F18C1B6E-279D-4FF7-B344-94734246C717}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ShpCore.ModLoader", "ShpCore.ModLoader\ShpCore.ModLoader.csproj", "{942A2990-9163-4BF0-9590-50F19A964A82}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ShpCore.ModAPI", "ShpCore.ModAPI\ShpCore.ModAPI.csproj", "{6393A15E-4868-47FE-8708-50E71CE19B7F}"
 EndProject

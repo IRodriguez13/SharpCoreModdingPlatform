@@ -122,6 +122,14 @@ public static class SharpCoreCLI
         }, localPathOption, localVersionOption);
 
 
+        Command kernelLogPath = new("kernel-log-path", "Muestra la ubicación del archivo de logs del núcleo");
+        kernelLogPath.SetHandler(() =>
+        {
+            string logPath = Path.Combine(SharpCoreHome.LogsDir, "kernel.log");
+            KernelLog.Info($"Ruta actual de logs: {logPath}");
+        });
+
+
 
         Command kernelList = new("kernel-list", "Lista los kernels instalados localmente");
         kernelList.SetHandler(() =>
@@ -233,12 +241,18 @@ public static class SharpCoreCLI
         }, payloadOption, protocolOption, adapterOption);
 
 
+// =========== Comandos del CLI registrados ===========
+
         root.AddCommand(runCommand);
         root.AddCommand(HelpCommand);
         root.AddCommand(neofetch);
         root.AddCommand(kernelList);
         root.AddCommand(kernelSwitch);
         root.AddCommand(kernelUpdate);
+        root.AddCommand(kernelCheck);
+        root.AddCommand(kernelRollback);
+        root.AddCommand(kernelAddLocal);
+        root.AddCommand(kernelLogPath);
 
         await root.InvokeAsync(args);
     }

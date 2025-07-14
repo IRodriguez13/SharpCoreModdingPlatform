@@ -5,39 +5,63 @@ namespace ShpCore.Logging;
 
 public static class KernelLog
 {
-  static KernelLog()
-  {
-    Log.Logger = new LoggerConfiguration()
-        .MinimumLevel.Debug()
-        .WriteTo.Console()
-        .WriteTo.File("kernel.log", rollingInterval: RollingInterval.Day)
-        .CreateLogger();
-  }
+    private static bool _initialized = false;
 
-  // Fatal Errors
-  public static void Panic(string msg, Exception? ex = null)
-  {
-    var fullMessage = $"[PANIC] {msg}";
-
-    if (ex is null)
+    public static void Init(string logDirectory)
     {
-      Log.Fatal(fullMessage);
-      return;
+        if (_initialized) return; // Evitás múltiples inicializaciones
+
+        string logPath = Path.Combine(logDirectory, "kernel.log");
+
+        Log.Logger = new LoggerConfiguration()
+            .MinimumLevel.Debug()
+            .WriteTo.Console()
+            .WriteTo.File(logPath, rollingInterval: RollingInterval.Day)
+            .CreateLogger();
+
+        _initialized = true;
     }
-    
-    Log.Fatal(ex, fullMessage);
-    
-  }
 
-  // Necesary Info for events in runtime
-  public static void Info(string msg) => Log.Information($"[INFO] {msg}");
+    // Fatal Errors
+    public static void Panic(string msg, Exception? ex = null)
+    {
+        string fullMessage = $"[PANIC] {msg}";
 
+        if (ex is null)
+            Log.Fatal(fullMessage);
+        else
+            Log.Fatal(ex, fullMessage);
 
-  // Util warns in development 
-  public static void Warn(string msg) => Log.Warning($"[WARN] {msg}");
+        // Además, informás por consola dónde fue logueado
+        Console.ForegroundColor = ConsoleColor.Red;
+        Console.WriteLine(fullMessage);
+        Console.ResetColor();
+    }
 
+    // Necesary Info for events in runtime
+    public static void Info(string msg)
+    {
+        Console.ForegroundColor = ConsoleColor.White;
+        Console.WriteLine($"[INFO] {msg}");
+        Console.ResetColor();
+        Log.Information(msg);
+    }
 
-  // Runtime Data (most used)
-  public static void Debug(string msg) => Log.Debug($"[DEBUG] {msg}");
+    // Util warns in development 
+    public static void Warn(string msg)
+    {
+        Console.ForegroundColor = ConsoleColor.Yellow;
+        Console.WriteLine($"[WARN] {msg}");
+        Console.ResetColor();
+        Log.Warning(msg);
+    }
 
+    // Runtime Data (most used)
+    public static void Debug(string msg)
+    {
+        Console.ForegroundColor = ConsoleColor.Green;
+        Console.WriteLine($"[DEBUG] {msg}");
+        Console.ResetColor();
+        Log.Debug(msg);
+    }
 }
