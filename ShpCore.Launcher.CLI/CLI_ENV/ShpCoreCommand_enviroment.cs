@@ -55,6 +55,7 @@ public static class SharpCoreCLI
             KernelLog.Info("GitHub: https://github.com/IRodriguez13/SharpCore_forge");
             KernelLog.Info("Adapter: No selected (use --adapter /path/to/adapter)");
             KernelLog.Info("ASCII font: Banner3 (logo), 3x5 (version)");
+            KernelLog.Info("License: GPL-3.0");
 
             Console.ResetColor();
         });
