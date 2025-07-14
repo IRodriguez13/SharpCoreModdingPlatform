@@ -5,6 +5,10 @@ using ShpCore.Logging;
 using System.Threading.Tasks;
 using SharpCore.Kernel.Init;
 using System.Runtime.InteropServices;
+using SharpCore.CLI.Env.FileManagement;
+using System.Linq;
+using System.Text.Json;
+using System.Collections.Generic;
 
 
 // USO DE EJEMPLO: sharpcore run --protocol namedpipe --adapter forge --payload ./mods/axel.json
@@ -15,22 +19,148 @@ public static class SharpCoreCLI
 {
     public static async Task Run(string[] args)
     {
+        SharpCoreHome.EnsureStructure(); // <- Se asegura que todo exista
+
+        RootCommand root = new("CLI oficial de SharpCore") { Name = "shpcore" }; SharpCoreHome.EnsureStructure(); // <- Se asegura que todo exista
+
+        // Muestra el banner y la información del núcleo ni bien se inicia el CLI en color blanco y amarillo
+        Console.ForegroundColor = ConsoleColor.White;
         CoreFecth();
+        Console.ResetColor();
 
-        RootCommand root = new("CLI oficial de SharpCore")
-        {
-            Name = "sharpcore"
-        };
 
-        var protocolOption = new Option<string>("--protocol", "Protocolo de transporte")
+        Option<string> protocolOption = new Option<string>("--protocol", "Protocolo de transporte")
         {
             IsRequired = false
         }.FromAmong("namedpipe", "grpc", "unix");
 
-        var adapterOption = new Option<string>("--adapter", "Ruta al adaptador")
+        Option<string> adapterOption = new("--adapter", "Ruta al adaptador")
         {
             IsRequired = false
         };
+
+        Command kernelCheck = new("-kernel-check", "Consulta si hay una nueva versión disponible");
+
+        kernelCheck.SetHandler(() =>
+        {
+            // Simula lectura desde metadata
+            var localVersions = SharpCoreHome.GetInstalledVersions();
+            var availableJson = File.ReadAllText(SharpCoreHome.VersionMetadataFile);
+            var availableVersions = JsonSerializer.Deserialize<List<string>>(availableJson);
+
+            if (availableVersions == null || availableVersions.Count == 0)
+            {
+                KernelLog.Warn("No hay versiones remotas disponibles registradas.");
+                return;
+            }
+
+            var latest = availableVersions.OrderByDescending(v => v).FirstOrDefault();
+            var installed = localVersions.Contains(latest);
+
+            if (!installed)
+            {
+                KernelLog.Warn($"🔔 Hay una nueva versión disponible: {latest}");
+                return;
+            }
+
+            KernelLog.Info($"✔ Ya tenés la última versión ({latest}) instalada.");
+        });
+
+
+
+        Command kernelRollback = new("-kernel-rollback", "Vuelve a la versión anterior del kernel (si existe)");
+
+        kernelRollback.SetHandler(() =>
+        {
+            string activePath = SharpCoreHome.ActiveKernelFile.Trim();
+            string currentVersion = File.ReadAllText(activePath).Trim();
+            var versionPath = Path.Combine(SharpCoreHome.KernelsDir, currentVersion);
+            string[] installedVersions = SharpCoreHome.GetInstalledVersions();
+
+            var currentIndex = Array.IndexOf(installedVersions, currentVersion);
+            if (currentIndex == -1 || currentIndex + 1 >= installedVersions.Length)
+            {
+                KernelLog.Warn("No hay versiones anteriores disponibles.");
+                return;
+            }
+            string previous = installedVersions[currentIndex + 1];
+            File.WriteAllText(activePath, previous);
+            KernelLog.Info($"✔ Volviste a la versión anterior: {previous}");
+
+
+
+        });
+
+        Option<string> localPathOption = new("--path", "Ruta a un kernel local ya compilado") { IsRequired = true };
+        Option<string> localVersionOption = new("--version", "Versión a registrar") { IsRequired = true };
+
+        Command kernelAddLocal = new("kernel-add-local", "Registra un kernel compilado localmente");
+        kernelAddLocal.AddOption(localPathOption);
+        kernelAddLocal.AddOption(localVersionOption);
+
+        kernelAddLocal.SetHandler((string path, string version) =>
+        {
+            string kernelsDir = Path.Combine(SharpCoreHome.ActiveKernelDll, "kernels");
+            string targetDir = Path.Combine(kernelsDir, version);
+
+            if (!Directory.Exists(path))
+            {
+                KernelLog.Warn($"❌ El path {path} no existe.");
+                return;
+            }
+
+            if (Directory.Exists(targetDir))
+            {
+                KernelLog.Warn($"❌ Ya existe un kernel registrado como {version}.");
+                return;
+            }
+
+            Directory.CreateDirectory(targetDir);
+            File.Copy(Path.Combine(path, "sharpcore.kernel.dll"), Path.Combine(targetDir, "sharpcore.kernel.dll"));
+
+            KernelLog.Info($"✔ Kernel local registrado como versión {version}.");
+        }, localPathOption, localVersionOption);
+
+
+
+        Command kernelList = new("kernel-list", "Lista los kernels instalados localmente");
+        kernelList.SetHandler(() =>
+        {
+            string kernelsPath = Path.Combine(SharpCoreHome.ActiveKernelFile, "kernels");
+            string active = File.ReadAllText(Path.Combine(kernelsPath, "active.txt")).Trim();
+
+            foreach (var dir in Directory.GetDirectories(kernelsPath))
+            {
+                string version = new DirectoryInfo(dir).Name;
+                string label = version == active ? " (active)" : "";
+                KernelLog.Info($"✔ {version}{label}");
+            }
+        });
+
+
+        Option<string> switchVersionOption = new("--version", "Versión a activar") { IsRequired = true };
+
+        Command kernelSwitch = new("kernel-switch", "Activa otra versión del kernel");
+        kernelSwitch.AddOption(switchVersionOption);
+        kernelSwitch.SetHandler((string version) =>
+        {
+            string versionPath = Path.Combine(SharpCoreHome.KernelsDir, "kernels", version);
+            if (!Directory.Exists(versionPath))
+            {
+                KernelLog.Warn($"La versión {version} no está instalada.");
+                return;
+            }
+
+            File.WriteAllText(Path.Combine(SharpCoreHome.MetadataDir, "kernels", "active.txt"), version);
+            KernelLog.Info($"✔ Versión activa cambiada a {version}");
+        }, switchVersionOption);
+
+        Command kernelUpdate = new("kernel-update", "Descarga la última versión del kernel");
+        kernelUpdate.SetHandler(() =>
+        {
+            KernelLog.Info("✔ Simulando descarga desde remoto...");
+            // Lógica real: descargar zip, extraer a ~/.sharpcore/kernels/vX.Y.Z/
+        });
 
 
         Command neofetch = new("corefetch", "Muestra información del núcleo SharpCore");
@@ -39,14 +169,14 @@ public static class SharpCoreCLI
         {
             CoreFecth();
 
-            var version = File.ReadAllText("VERSION.txt").Trim();
-            var os = RuntimeInformation.IsOSPlatform(OSPlatform.Windows) ? "Windows" :
+            string version = File.ReadAllText("VERSION.txt").Trim();
+            string os = RuntimeInformation.IsOSPlatform(OSPlatform.Windows) ? "Windows" :
                      RuntimeInformation.IsOSPlatform(OSPlatform.Linux) ? "Linux" :
                      RuntimeInformation.IsOSPlatform(OSPlatform.OSX) ? "macOS" : "Unknown";
 
             var arch = RuntimeInformation.OSArchitecture;
-            var runtime = RuntimeInformation.FrameworkDescription;
-           
+            string runtime = RuntimeInformation.FrameworkDescription;
+
             Console.ForegroundColor = ConsoleColor.Yellow;
 
             KernelLog.Info($"Kernel version: {version}");
@@ -58,16 +188,6 @@ public static class SharpCoreCLI
             KernelLog.Info("License: GPL-3.0");
 
             Console.ResetColor();
-        });
-
-
-        Command versionCommand = new("--version", "Muestra la versión actual del núcleo SharpCore");
-        versionCommand.AddAlias("-v");
-        versionCommand.AddAlias("-V");
-        versionCommand.SetHandler(() =>
-        {
-            var version = File.ReadAllText("VERSION.txt").Trim();
-            KernelLog.Info($"[CLI] SharpCore v {version}");
         });
 
 
@@ -85,7 +205,7 @@ public static class SharpCoreCLI
         runCommand.AddOption(protocolOption);
         runCommand.AddOption(adapterOption);
 
-        var payloadOption = new Option<string>("--payload", "Ruta al archivo JSON con el payload") { IsRequired = true };
+        Option<string> payloadOption = new("--payload", "Ruta al archivo JSON con el payload") { IsRequired = true };
         runCommand.AddOption(payloadOption);
 
         runCommand.SetHandler((string payloadPath, string protocol, string adapterPath) =>
@@ -113,8 +233,12 @@ public static class SharpCoreCLI
         }, payloadOption, protocolOption, adapterOption);
 
 
-        root.AddCommand(versionCommand);
         root.AddCommand(runCommand);
+        root.AddCommand(HelpCommand);
+        root.AddCommand(neofetch);
+        root.AddCommand(kernelList);
+        root.AddCommand(kernelSwitch);
+        root.AddCommand(kernelUpdate);
 
         await root.InvokeAsync(args);
     }
@@ -136,7 +260,7 @@ public static class SharpCoreCLI
 
     private static void CoreFecth()
     {
-        var banner = File.ReadAllText("Banner.txt");
+        string banner = File.ReadAllText("Banner.txt");
         Console.WriteLine(banner);
     }
 
