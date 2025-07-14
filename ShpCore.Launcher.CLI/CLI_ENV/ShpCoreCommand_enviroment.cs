@@ -49,8 +49,8 @@ public static class SharpCoreCLI
            
             Console.ForegroundColor = ConsoleColor.Yellow;
 
-            KernelLog.Info($"Versión: {version}");
-            KernelLog.Info("Autor: Iván Rodriguez (ivanr013) <ivanrwcm25@gmail.com>");
+            KernelLog.Info($"Kernel version: {version}");
+            KernelLog.Info("Author: Iván Rodriguez (ivanr013) <ivanrwcm25@gmail.com>");
             KernelLog.Info($"Runtime: {os} {arch} / {runtime}");
             KernelLog.Info("GitHub: https://github.com/IRodriguez13/SharpCore_forge");
             KernelLog.Info("Adapter: No selected (use --adapter /path/to/adapter)");
