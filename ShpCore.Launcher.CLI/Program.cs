@@ -9,13 +9,17 @@ public class Program
 {
     public static void Main(string[] args)
     {
-        KernelLog.Info("[Launcher] Starting ShpCore Launcher CLI...");
+        KernelLog.Info("Launcher: Starting ShpCore Launcher CLI...");
         LauncherRunner.EjecutarMinecraft();
+
+        KernelLog.Info("Launcher: Starting ShpCore Launcher CLI...");
+        MainCLI(args).GetAwaiter().GetResult();
+        KernelLog.Info("Launcher: ShpCore Launcher CLI finished.");
         
     }
     public static async Task MainCLI(string[] args)
     {
         await SharpCoreCLI.Run(args);
-        KernelLog.Info("[Launcher] ShpCore Launcher CLI finished.");
+        KernelLog.Info("Launcher: ShpCore Launcher CLI finished.");
     }
 }

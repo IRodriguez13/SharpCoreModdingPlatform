@@ -1,4 +1,4 @@
-using 
+using MSharp.Launcher.Core.Bridge;
 
 namespace ShpCore.Launcher.Core.Factory;
 
@@ -8,7 +8,7 @@ public static class ProtocolFactory
     {
         return protocol.ToLowerInvariant() switch
         {
-            "namedpipe" => new NamedPipeProtocol(),
+            "namedpipe" => new NamedPipeBridgeConnection(),
             "grpc" => new GrpcProtocol(),
             "file" => new FileProtocol(),
             _ => throw new ArgumentException($"Unknown protocol: {protocol}")

@@ -15,8 +15,6 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ShpCore.ModAPI", "ShpCore.M
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ShpCore.Testing", "ShpCore.Testing\ShpCore.Testing.csproj", "{B000226A-DDF6-4205-9D81-D3E2CB887B59}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Mods#", "Mods#\Mods#.csproj", "{UN-GUID-NUEVO}"
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ShpCore.Staging", "ShpCore.Staging\ShpCore.Staging.csproj", "{312B3CD5-ED1B-426E-AE29-7EC6FA765EA0}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ShpCore.Logging", "ShpCore.Logging\ShpCore.Logging.csproj", "{B5373728-523C-4CD8-8B27-52B2F7421138}"
