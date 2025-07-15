@@ -10,7 +10,7 @@ public static class ProtocolFactory
         {
             "namedpipe" => new NamedPipeBridgeConnection(),
             "grpc" => new GrpcProtocol(),
-            "file" => new FileProtocol(),
+            "unix" => new FileProtocol(),
             _ => throw new ArgumentException($"Unknown protocol: {protocol}")
 
         };

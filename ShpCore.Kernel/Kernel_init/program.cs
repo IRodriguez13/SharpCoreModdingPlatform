@@ -1,20 +1,22 @@
 using ShpCore.Logging;
 using SharpCore.Kernel.Init;
+
+namespace SharpCore.Kernel.Start;
 public class Program
 {
-    public static void Main(string[] args)
+    public static void Main(string[] start_arguments)
     {
-        KernelLog.Info("[Core] Launcher: Starting ShpCore...");
+        KernelLog.Info("[Start] Launcher: Starting ShpCore...");
 
-        if (args.Length < 3)
+        if (start_arguments.Length < 3)
         {
-            KernelLog.Panic("Usage: <payloadPath> <protocol> <adapterPath>");
+            KernelLog.Panic("[Start] Dev, dont forget Usage: <payloadPath> <protocol> <adapterPath>");
             return;
         }
 
-        var payloadPath = args[0];
-        var protocol = args[1];
-        var adapter = args[2];
+        var payloadPath = start_arguments[0];
+        var protocol = start_arguments[1];
+        var adapter = start_arguments[2];
 
         SharpCoreKernel.Run(payloadPath, protocol, adapter);
     }

@@ -36,7 +36,7 @@ public static class SharpCoreKernel
         }
         finally
         {
-            KernelLog.Info("[Runner] Proceso de ejecución del núcleo finalizado.");
+            KernelLog.Debug("[Runner] Proceso de ejecución del núcleo finalizado.");
         }
     }
 }
