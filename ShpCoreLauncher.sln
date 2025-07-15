@@ -5,7 +5,7 @@ VisualStudioVersion = 17.0.31903.59
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ShpCore.Kernel", "ShpCore.Kernel\ShpCore.Launcher.Kernel.csproj", "{8EA79B1E-EF0C-48F8-9237-C1A8D11BAF3D}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ShpCore.Launcher.CLI", "ShpCore.Launcher.CLI\ShpCore.Launcher.CLI.csproj", "{0B6331FC-86DE-40D0-9355-5B844E055CFB}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ShpCore.CLI", "ShpCore.CLI\ShpCore.CLI.csproj", "{0B6331FC-86DE-40D0-9355-5B844E055CFB}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ShpCore.MCInterop", "ShpCore.MCInterop\ShpCore.MCInterop.csproj", "{F18C1B6E-279D-4FF7-B344-94734246C717}"
 EndProject
