@@ -1,6 +1,6 @@
 using System.Diagnostics;
 
-namespace MinecraftLauncherCORE;
+namespace MinecraftLauncher;
 
 public class MinecraftLauncher
 {
